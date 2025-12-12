@@ -1,0 +1,45 @@
+services:
+    web:
+      container_name: node_audit
+      restart: always
+      build: .
+      env_file: .env
+      environment:
+        - MONGO_USERNAME=$MONGO_USERNAME
+        - MONGO_PASSWORD=$MONGO_PASSWORD
+        - MONGO_HOSTNAME=mongo
+        - MONGO_PORT=$MONGO_PORT
+        - MONGO_DB=$MONGO_DB
+      ports:
+        - "3005:3005"
+      links:
+        - mongo
+      depends_on:
+        - mongo
+      networks:
+        - nolatech_net_test
+      volumes:
+        - .:/usr/src/app
+        - node_modules:/usr/src/app/node_modules
+    mongo:
+      container_name: mongo_audit
+      image: mongo:6.0.3
+      env_file: .env
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+        - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+      ports:
+        - "27017:27017"
+      networks:
+        - nolatech_net_test
+      volumes:
+        - mongodata:/data/db
+
+volumes:
+  mongodata:
+
+  node_modules:
+
+networks:
+  nolatech_net_test:
+    driver: bridge
